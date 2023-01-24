@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "image": "../../nav_img/1.png",
+        "header": "School"
+    },
+    {
+        "id": 2,
+        "image": "../../nav_img/2.png",
+        "header": "Personal"
+    },
+    {
+        "id": 3,
+        "image": "../../nav_img/3.png",
+        "header": "Design"
+    }
+]
