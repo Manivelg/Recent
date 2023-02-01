@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "parentId": "p1",
+        "image": "../../nav_img/1.png",
+        "header": "School",
+        "link": "/school"
+    },
+    {
+        "id": 2,
+        "parentId": "p2",
+        "image": "../../nav_img/2.png",
+        "header": "Personal",
+        "link": "/personal"
+    },
+    {
+        "id": 3,
+        "parentId": "p3",
+        "image": "../../nav_img/3.png",
+        "header": "Design",
+        "link": "/design"
+    }
+]

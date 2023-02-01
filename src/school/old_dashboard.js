@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 import { TfiAngleLeft, TfiMoreAlt } from "react-icons/tfi";
-import Task from '../task/task';
-import CreateTask from '../task/CreateTask';
+import { TfiPlus } from "react-icons/tfi";
 
+import CreateTask from '../task/CreateTask';
 import Header from '../bar/header';
 import Sidemenu from '../bar/sidemenu';
+
 import '../main.scss';
-import { TfiPlus } from "react-icons/tfi";
+
 
 
 //getting the localstorage datas
@@ -70,6 +71,7 @@ function Dashboard() {
             <div className='list_view'>
               <TfiMoreAlt className='show_view'/>
             </div>
+            
           </div>
 
           <div className='add_task'>
@@ -87,6 +89,7 @@ function Dashboard() {
             <button className={`submit ${open ? "block" : "hidden"}`} onClick={Task_submit}>Add</button>
                 
             </div>
+            
           </div>
             
             <div className=''>
@@ -100,6 +103,8 @@ function Dashboard() {
               
 
             </div>
+
+            
 
           {/* <div className='task_show'>
             <Task TaskView = {TaskView}/>

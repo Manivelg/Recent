@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "parentId": 1,
+        "image": "../../nav_img/1.png",
+        "header": "Dashboard",
+        "link": "/dashboard"
+    },
+    {
+        "id": 2,
+        "parentId": 2,
+        "image": "../../nav_img/2.png",
+        "header": "Collections",
+        "link": "/school"
+    }
+]

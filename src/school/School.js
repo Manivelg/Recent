@@ -1,74 +1,94 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Header from '../bar/header';
 import Modal from '../task/Modal';
+import uniqid from 'uniqid';
 
+import SidemenuData from '../bar/json/sidemenu.json';
 import TaskView from '../task/TaskView';
 import { TfiAngleLeft, TfiMoreAlt } from "react-icons/tfi";
 import { TfiPlus } from "react-icons/tfi";
- 
 
 function School() {
 
-        //EditTodo List 
+  // const filteredTask = response => {
+  //   const search = response.target.value.toLowerCase()
+  //   const filterNames = TaskContent.filter(response => response.Name.toLowerCase().includes(search));
+  //   SetName(filteredTask);
 
-        const EditTodo = (id) => {
-          console.log(id);
+  // }
 
-          return (
-            <div>
-              <input type="text" Name = 'Name'/>
-            </div>
-          )
+//   const Searchdata = (e) => {
+//     console.log(e.target.value);
+
+//     // if(e.target.value != '') {
+//     //     Setsearchvalue(e.target.value);
+//     //     console.log(searchvalue);
+//     // }
+// }
+  var generateId = uniqid();
+  let dateObj = new Date();
+  let days = ["Sun", "Mon" , "Tue", "Wed" , "Thu" , "Fri" , "Sat"];
+  
+  let date = dateObj.getDate() + '/' + (dateObj.getMonth()+1) + '/' + dateObj.getFullYear();
+  let day = days[dateObj.getDay()];
+  let time = dateObj.getHours()+ ':' + dateObj.getMinutes();
+      //Edit Popup Modal Data
+      const [dialogModal, setDialogModal] = useState (
+        {
+          modalstatus: false,
+          modalDesc : '',
+          onclick: ''
         }
-        //DeleteTodo List
-        // const DeleteTodo = (id) => {
-        //     const filterTask = TaskContent.filter((e,i) => {
-        //         return e.id !== id
-        //     })
-        //     SetTaskcontent(filterTask);
-        // }
+      )
 
-        const DeleteTodo = (id) => {
-          console.log(id);
-          SetShowModal(true);
+      //Confirm Complete Popup Modal Data
+      const [completeModal, SetCompleteModal] = useState (
+        {
+          modalstatus: false,
+          modalDesc : '',
+          onclick: ''
+        }
+      )
 
+
+
+      //Popup Modal Data
+      const DeleteTodo = (getData) => {
+          //console.log(getData);
+          setDialogModal({modalstatus: true, modalDesc: getData, onclick: ()=> {DeleteTask(getData.id)}})
+      }
+
+        //Confirm DeleteTask
+
+        const DeleteTask = (modalData) => {
+          // console.log(modalData);
           const filterTask = TaskContent.filter((e,i) => {
-                    return e.id !== id
-                })
-                
-                SetTaskcontent(filterTask);
-
-          // SetShowModal(true);
-          // SetTaskcontent(pre => {
-          //   const newArray = [...pre]
-          //   return newArray.filter(item => item.id !== id)
-            
-          // })
-          
+            return e.id !== modalData.id
+            })
+    
+            SetTaskcontent(filterTask);
         }
-
-        // const HandleDelete = (id) => {
-        //   SetTaskcontent(pre => {
-        //     const newArray = [...TaskContent]
-        //     return newArray.filter(e =>TaskContent.id !== Deleted)
-        //   })
-        //   SetShowModal(false);
-        // }
 
         //CompleteHandle
-        const completeHandle = (id)=>{
-          // console.log(id);
+        const completeHandle = (completeData)=>{
+          console.log('data showing : ', completeData);
+          SetCompleteModal({modalstatus: true, modalDesc: completeData, onclick: ()=> {confirmComplete(completeData.id)}})
+        }
+
+        //confirmComplete
+        const confirmComplete = (finished) => {
+          console.log('id :', finished);
           SetTaskcontent(
-              TaskContent.map((TaskContent)=>{
-                  if(TaskContent.id === id){
-                      return {...TaskContent, ischecked: !TaskContent.ischecked}
-                      
-                  }
-                  else{
-                      return TaskContent;
-                  }
-              })
-          )
+            TaskContent.map((TaskContent)=>{
+                if(TaskContent.id === finished.id){
+                    return {...TaskContent, ischecked: !TaskContent.ischecked}
+                    
+                }
+                else{
+                    return TaskContent;
+                }
+            })
+        )
         }
 
     //Todo Task value getting
@@ -86,43 +106,143 @@ function School() {
     //Hooks
     const [Name, SetName] = useState([]);
     // const [Open, SetOpen] = useState(false);
+    const [Count, SetCount] = useState(1);
+    const [parentId, SetParentId] = useState('p1');
+    const [menuTitle, SetMenuTitle] = useState('School');
     const [TaskContent, SetTaskcontent] = useState(SaveData());
-    const [ShowModal, SetShowModal] = useState(false);
+    const [buttonText, SetbuttonText] = useState("Add");
+    const [sideMenuActive, SetSideMenuActive] = useState(1);
 
+    const addInputRef = useRef();
+    const scrolltoinput = useRef();
 
-    //function
+        //EditTodo List
+          const EditTodo = (dataValue) => {
+
+            SetbuttonText("Edit");
+
+            console.log(dataValue);
+
+            addInputRef.current.id = dataValue.id;
+            addInputRef.current.value = dataValue.Name;
+
+            
+
+            SetName(dataValue.Name);
+            addInputRef.current.focus();
+            // console.log(addeditid,addeditName);
+            scrolltoinput.current?.scrollIntoView(
+              {
+                top: 0,
+                behaviour: "smooth"
+              }
+            )
+
+          }
+
+    //Add function
     const Task_submit = (e) => {
+      let addeditid = addInputRef.current.id;
+      let addeditName = addInputRef.current.value;
+      // console.log(addeditid,addeditName);
 
-        e.preventDefault(e);
+      e.preventDefault(e);
+        
+      addeditid ? edit() : add();
 
-        if(Name !== '') {
+    }
 
+    function edit() {
+      let addeditid = addInputRef.current.id;
+      let addeditName =addInputRef.current.value;
+
+      SetbuttonText("Add");
+
+
+      if(Name !='') {        
+        let result = TaskContent.map( (response) => response.id == addeditid ?
+        {
+          ...response,
+          Name: addeditName,
+          id: response.id,
+          parent_id: response.parent_id,
+          date: date,
+          day: day,
+          time: time,
+        }
+        : response )
+
+        SetTaskcontent(result);
+        SetName('');
+      }
+    }
+
+    function add() {
+        SetCount (Count + 1);
+        // if(Name !== '') {
+          if(Name != '') {
+          
             let TaskView = {
-                id : Number(TaskContent.length+1),
+                // id : Number(TaskContent.length+1),
+                id: generateId,
+                parent_id : parentId,
                 Name,
                 checked : false,
+                count : Count,
+                day: day,
+                time: time,
+                date : date,
             }
-            
+            console.log(TaskView);
             SetTaskcontent([...TaskContent,TaskView]);
             SetName('');
             
-        }
+            // nameRef.current.value = "";
+        
       }
+    }
 
         //Save data localStorage
         useEffect(() => {
             localStorage.setItem('TaskContent', JSON.stringify(TaskContent));
         },[TaskContent])
+
+        // useEffect (() => {
+        //   console.log(parentId);
+        // },[parentId])
         
         // const SubmitEvents = () => {
         //   document.getElementById('submit').style.display='block';
         // }
 
+        console.log("dashboard", sideMenuActive);
+//Sidemenu UI Connection
+let sidemenuDataUI = (
+  SidemenuData.map((item,pos) => {
+    return (
+        <li 
+            key={item.id} 
+            
+        >
+            <div 
+                className= { sideMenuActive == item.id ? 'side_menu side_menu--active' : 'side_menu' }
+                onClick = { () => {SetSideMenuActive(item.id); SetParentId(item.parentId); SetMenuTitle(item.header) }}
+                >
+                <img src={item.image} className='sidemenu_img' alt='School' />
+                <p className='sidemenu_para'>{item.header}</p>
+            </div>
+        </li>
+)}
+)
+)
+
   return (
     <>
-    <Header />
+    <Header>
+      {sidemenuDataUI}
+    </Header>
 
-    <div className='view_data'>
+    <div className='view_data' ref={scrolltoinput}>
 
     <section className='list_data'>
       <div className='auto_scroll'>
@@ -132,7 +252,7 @@ function School() {
                       <div className='left_chevron'>
                       <TfiAngleLeft className='back_to_chevron'/>
                       </div>
-                      <div className='dash_head'>School</div>
+                      <div className='dash_head'>{menuTitle}</div>
                   </div>
                   
                   <div className='list_view'>
@@ -140,21 +260,26 @@ function School() {
                   </div>
               </div>
 
-            <div className='add_task'>
+            <div className='add_task' >
               <div className='task_plus'>
+                <span className='circle_first'>
                   <TfiPlus className='plus_sign' />
+                </span>
                   <input
                         type= 'text'
                         placeholder='Add a Task'
                         value={Name}
+                        id=''
                         className='input_file'
                         onChange={(e) => {SetName(e.target.value)}}
                         // onClick={()=> SetOpen(!Open)}
                         // onClick={() => SubmitEvents()}
+                        ref = {addInputRef}
                         required
                   />
                   {/* <button className={`submit ${Open ? "block" : "hidden"}`} onClick={Task_submit}>Add</button> */}
-                  <button className='submit' onClick={Task_submit}>Add</button>
+                  <button className='canceltask cancel_hide'>Cancel</button>
+                  <button className='submit' onClick={Task_submit}>{buttonText}</button>
               </div>
             </div>
 
@@ -163,7 +288,13 @@ function School() {
 
             { 
             TaskContent.length > 0 && 
-            <TaskView TaskContent={TaskContent} DeleteTodo = {DeleteTodo} EditTodo = {EditTodo} completeHandle = {completeHandle}/>
+                <TaskView 
+                        TaskContent={TaskContent} 
+                        DeleteTodo = {DeleteTodo} 
+                        EditTodo = {EditTodo} 
+                        completeHandle = {completeHandle}
+                        currentParentId = {parentId}
+                />
             }
 
             {
@@ -179,13 +310,40 @@ function School() {
 
     {
 
-ShowModal && (
+dialogModal.modalstatus && (
     <Modal 
-        title={TaskContent.Name}
-        close={SetShowModal}
-        DeleteTodo={TaskContent}
+       modalDesc = {dialogModal.modalDesc}
+       Title = {'Do you want to Delete?'}
+       onDelete = {
+        
+        () => {
+                DeleteTask(dialogModal.modalDesc);
+                setDialogModal(!dialogModal.modalstatus);
+              } 
+              }
+              
+       onClose = { () => setDialogModal(!dialogModal.modalstatus) }
     />
 )
+}
+
+  {
+    completeModal.modalstatus && (
+      <Modal  
+        Title = {'Are you sure completed the task?'}
+        modalDesc = {completeModal.modalDesc}
+        Note = {"*Note: Once you click confirm you can't change it."}
+        onDelete = {
+
+          () => {
+                confirmComplete(completeModal.modalDesc);
+                SetCompleteModal(!completeModal.modalstatus);
+                }
+          }
+        onClose = { ()=> SetCompleteModal(!completeModal.modalstatus) }
+        />
+    )
+      
 }
 
     </div>

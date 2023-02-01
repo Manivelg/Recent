@@ -1,9 +1,13 @@
-import React from 'react';
-import SidemenuData from '../bar/sidemenu_json/sidemenu.json';
+import React, { useState } from 'react';
+import SidemenuData from './json/sidemenu.json';
 
-function sidemenu() {
+function Sidemenu() {
+
+const [sideMenuActive, SetSideMenuActive] = useState(1);
+
+
   return (
-   
+
     <>
         <nav className='sidemenu'>
             
@@ -17,8 +21,14 @@ function sidemenu() {
                 
                 SidemenuData.map((item,pos) => {
                     return (
-                        <li key={item.id}>
-                            <div className='side_menu'>
+                        <li 
+                            key={item.id} 
+                            
+                        >
+                            <div 
+                                className= { sideMenuActive == item.id ? 'side_menu side_menu--active' : 'side_menu' }
+                                onClick={ () => { SetSideMenuActive(item.id); }}
+                                >
                                 <img src={item.image} className='sidemenu_img' alt='School' />
                                 <p className='sidemenu_para'>{item.header}</p>
                             </div>
@@ -33,4 +43,4 @@ function sidemenu() {
   )
 }
 
-export default sidemenu
+export default Sidemenu
